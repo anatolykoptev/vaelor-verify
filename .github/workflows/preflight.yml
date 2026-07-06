@@ -1,0 +1,41 @@
+name: preflight
+
+# Pre-merge build/test gate. Runs on a dedicated self-hosted runner on
+# krolik (krolik-go-code-verify) — NOT the go-code runner, NOT a paid
+# GitHub-hosted runner. Deliberately its own runner slot: this service is
+# the sole holder of Docker socket access in the go-code deployment (ADR
+# 0002 Phase 1, decision D0), and keeping its CI isolated from go-code's
+# runner is a small extra step toward keeping its whole footprint separate.
+#
+# Unlike go-code's preflight, there is no ephemeral-postgres step — this
+# service has no database. `make preflight` here is gofmt + vet + build +
+# test + govulncheck only.
+
+on:
+  pull_request:
+
+# One run per ref; cancel in-flight if a new push arrives.
+concurrency:
+  group: preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    # go-code-verify is a PUBLIC repo on a self-hosted runner living on the
+    # prod krolik box. Without this guard, `on: pull_request` would hand a
+    # fork PR's workflow run straight to that runner — arbitrary-code-
+    # execution on prod from an untrusted fork. Restrict to same-repo PRs.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, krolik-go-code-verify]
+    # This is this repo's ONLY runner — a hung job must not park it for
+    # GitHub's 6h default and block every later PR.
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: make preflight
+        run: make preflight
