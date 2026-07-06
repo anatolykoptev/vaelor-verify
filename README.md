@@ -45,3 +45,7 @@ later phases.
 ```bash
 make preflight   # gofmt + vet + build + test + govulncheck
 ```
+
+## CI
+
+![preflight](https://github.com/anatolykoptev/go-code-verify/actions/workflows/preflight.yml/badge.svg)
