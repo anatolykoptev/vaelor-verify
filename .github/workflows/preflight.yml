@@ -33,7 +33,11 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          # Fleet policy: CI runs the latest patched toolchain (go.mod is the
+          # minimum, not the pin). govulncheck gates on stdlib CVEs fixed in
+          # patch releases — seen live: GO-2026-4970 in os@go1.26.4, fixed
+          # in go1.26.5 while go.mod pinned 1.26.4.
+          go-version: stable
 
       - name: make preflight
         run: make preflight
