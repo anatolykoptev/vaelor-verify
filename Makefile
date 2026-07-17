@@ -2,7 +2,10 @@ BINARY  = bin/go-code-verify
 SERVICE = go-code-verify
 COMPOSE = cd $(HOME)/deploy/krolik-server && docker compose
 
-.PHONY: build lint fmt-check test govulncheck preflight run deploy clean
+GOSTALL_VERSION := v1.0.0
+GOSTALL := $(shell command -v gostall 2>/dev/null || echo $$(go env GOPATH)/bin/gostall)
+
+.PHONY: build lint fmt-check test govulncheck gostall preflight run deploy clean
 
 # CGO_ENABLED=0: this service has no C dependencies (unlike go-code, which
 # needs CGO for tree-sitter grammars) — a static binary is both simpler to
@@ -44,7 +47,17 @@ govulncheck:
 # repo-level isolation this whole service exists for). Unlike go-code's
 # preflight, there is no ephemeral-postgres step: this service has no
 # database (a concrete proof of its smaller footprint, ADR 0002 decision D0).
-preflight: fmt-check
+.PHONY: gostall
+
+# Uses -lockorder -missingunlock -starvation only; -waitgroup -channel -livelock
+# excluded (intra-procedural false positives on defer wg.Done() in goroutines,
+# signal.Notify channels, and test spin loops).
+gostall:
+	@[ -x "$(GOSTALL)" ] || { echo "gostall not installed: go install github.com/erfanmomeniii/gostall/cmd/gostall@$(GOSTALL_VERSION)"; exit 1; }
+	@echo "==> gostall"
+	GOWORK=off "$(GOSTALL)" -lockorder -missingunlock -starvation ./...
+
+preflight: fmt-check gostall
 	@echo "==> go vet ./..."
 	GOWORK=off go vet ./...
 	@echo "==> go build ./..."
