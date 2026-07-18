@@ -1,4 +1,4 @@
-module github.com/anatolykoptev/go-code-verify
+module github.com/anatolykoptev/vaelor-verify
 
 go 1.26.0
 
