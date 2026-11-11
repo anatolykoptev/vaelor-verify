@@ -1,4 +1,6 @@
-# go-code-verify
+# vaelor-verify
+
+> Formerly `go-code-verify`; the code-intelligence server it serves, `go-code`, is now [vaelor](https://github.com/anatolykoptev/vaelor). The text below keeps the older names where the wire contract and ADR use them.
 
 Sandboxed build/test/lint execution service for
 [go-code](https://github.com/anatolykoptev/go-code)'s `verify_environment`
@@ -44,6 +46,17 @@ plan). The HTTP API, sandboxing, and job execution land in later phases.
 make preflight   # gofmt + vet + build + test + govulncheck
 ```
 
+## Documentation
+
+- [docs/wire-contract.md](docs/wire-contract.md) — request/response schema.
+- [CLAUDE.md](CLAUDE.md) — invariants for coding agents; [CONTRIBUTING.md](CONTRIBUTING.md) — workflow; [docs/INDEX.md](docs/INDEX.md) — every document.
+
 ## CI
 
-![preflight](https://github.com/anatolykoptev/go-code-verify/actions/workflows/preflight.yml/badge.svg)
+![preflight](https://github.com/anatolykoptev/vaelor-verify/actions/workflows/preflight.yml/badge.svg)
+
+Pull requests run `make preflight` on a GitHub-hosted ARM runner.
+
+## Licence
+
+Apache-2.0, see [LICENSE](LICENSE).
