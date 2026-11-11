@@ -1,5 +1,7 @@
 # go-code-verify — agent rules
 
+The repository and module are named `vaelor-verify`; the prose below still uses the older names `go-code-verify` (this service) and `go-code` (the code-intelligence server, now `vaelor`). Overview in [README.md](README.md); every document is listed in [docs/INDEX.md](docs/INDEX.md).
+
 **Module**: `github.com/anatolykoptev/go-code-verify` | **Port**: 8910 (see `~/AGENTS.md` ports table)
 
 ## What this repo is, and why it is separate from go-code
@@ -69,9 +71,9 @@ No CGO, no database — `GOWORK=off CGO_ENABLED=0 go build -o bin/go-code-verify
 
 ## CI
 
-Self-hosted runner `host-a-go-code-verify` (separate from go-code's own
-runner — `.github/workflows/preflight.yml`), gate = `make preflight`. No
-ephemeral-postgres step: this service has no database.
+`.github/workflows/preflight.yml` runs `make preflight` on pull requests, on a
+GitHub-hosted `ubuntu-24.04-arm` runner with a stable Go toolchain and the pinned
+`gostall`. No ephemeral-postgres step: this service has no database.
 
 ## Deploy
 
